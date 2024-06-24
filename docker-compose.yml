@@ -1,0 +1,27 @@
+version: '3.1'
+
+volumes:
+  pg_demo:
+
+services:
+  dashboard:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_USER=user
+      - POSTGRES_DB=dashboard
+    volumes:
+      - pg_demo:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+  app:
+    restart: always
+    build: .
+    ports:
+      - "8094:8094"
+    depends_on:
+      - dashboard
+    environment:
+      SPRING_DATASOURCE_URL: 'jdbc:postgresql://dashboard:5432/dashboard'
+      JAVA_OPTS: '-Xmx512'
